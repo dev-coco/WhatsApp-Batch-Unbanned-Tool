@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .contact-form-container {
+      background: #F4F3F3;
+      width: 600px;
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+    .header h1 {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .info {
+      display: flex;
+      justify-content: space-around;
+      padding: 0px 15px 10px 15px;
+    }
+    .box {
+      position: relative;
+      width: 440px;
+      margin: 0 auto;
+      padding: 20px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      background: white;
+      border-radius: 10px;
+    }
+    .box textarea {
+      margin: 20px auto;
+      width: 100%;
+      border: 0;
+    }
+    .box textarea {
+      border-bottom: 1px solid rgba(68, 68, 68, 0.3);
+      resize: none;
+      outline: none;
+      font-size: 1rem;
+      font-family: lato;
+    }
+    .box button {
+      height: 40px;
+      width: 150px;
+      border: 0;
+      border-radius: 20px;
+      bottom: -20px;
+      background: #36d2eb;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 300;
+      outline: none;
+    }
+    .box button:hover {
+      background: #008CBA;
+    }
+    .contact-form {
+      padding-bottom: 40px;
+    }
+    body {
+      /*
+        Image from rawpixel premium
+        Please follow the license: https://www.rawpixel.com/services/licenses
+       */
+      background: url("https://dev-coco.github.io/images/Project/image-from-rawpixel-id-2042508-jpeg.jpg");
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      background-size: cover;
+      background-repeat: no-repeat;
+      display: grid;
+      justify-items: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="contact-form-container">
+    <div class="header">
+      <h1>
+        WhatsApp 解封提交工具
+      </h1>
+      <div class="info">
+        <span id="unblock"></span>
+        <span id="count"></span>
+      </div>
+    </div>
+    <div class="contact-form">
+      <div class="box">
+        <textarea id="phone" placeholder="请输入 WhatsApp 号码" rows="10"></textarea>
+        <div class="info">
+          <button onclick="sendEmail()">发送</button>
+          <button onclick="queryState()">查询</button>
+        </div>
+      </div>
+      <div style="padding-top:5px;text-align:center;">
+        <a href="https://github.com/dev-coco/WhatsApp-Batch-Unbanned-Tool/blob/main/LICENSE" target="_blank">LICENSE</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 初始化
+    function init () {
+      google.script.run.withSuccessHandler(function (num) {
+        void(document.getElementById('count').innerText = `剩余使用次数：${num}`)
+      }).getUsage()
+
+      google.script.run.withSuccessHandler(function (num) {
+        void(document.getElementById('unblock').innerText = `成功解封：${num}`)
+      }).unblockCount()
+    }
+    init()
+
+    // 发送邮件
+    function sendEmail () {
+      const phoneNumber = document.getElementById('phone')
+      google.script.run.withSuccessHandler(function (result) {
+        alert(result)
+        phoneNumber.value = ''
+      }).sendEmail(phoneNumber.value.match(/.+/g))
+    }
+
+    // 查询状态
+    function queryState () {
+      const phoneNumber = document.getElementById('phone')
+      google.script.run.withSuccessHandler(function (queryResult) {
+        void(phoneNumber.value = '')
+        for (const result of queryResult) {
+          phoneNumber.value += `${result.join('\t')}\n`
+        }
+        alert('查询完成')
+     }).queryState(phoneNumber.value.match(/.+/g))
+    }
+  </script>
+</body>
+</html>
